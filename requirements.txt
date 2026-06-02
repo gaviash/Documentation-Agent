@@ -1,0 +1,8 @@
+llama-index-core
+llama-index-llms-ollama
+dotenv
+tavily-python
+pytest
+ruff
+fastapi[standard]
+pandoc  
