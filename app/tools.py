@@ -495,7 +495,7 @@ def shell(
       precise, non-interactive commands and avoid destructive operations unless
       the user explicitly requested them.
     - max_output_chars: Maximum total characters to return across stdout and
-      stderr. Use a smaller value for quick checks. Values above 10,000 are
+      stderr. Use a smaller value for quick checks. Values above the limit are
       capped to keep tool output compact for the LLM. By default, set to 10,000.
     - timeout_seconds: Maximum command runtime in seconds. Values above 300 are
       capped. By default, set to 30.
@@ -562,3 +562,17 @@ def shell(
             **output
         }
     
+def ask_user(message : str):
+    """Ask the user a question and return their answer to the agent.
+
+    This is the human-in-the-loop bridge for workflow steps that need direct
+    user input. The agent provides the exact message to show to the user, then
+    receives the user's response and continues with that answer in context.
+
+    Parameters:
+    - message: The exact question or review prompt to show to the user.
+
+    Returns:
+    A dictionary with success=True and response set to the user's answer.
+    """
+    return _tool_result(success=True,response=input(message))

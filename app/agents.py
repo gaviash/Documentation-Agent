@@ -13,3 +13,19 @@ from llama_index.core.agent import (
 from llama_index.llms.ollama import Ollama
 import os 
 from dotenv import load_dotenv
+
+load_dotenv()
+
+brainstorming_agent=FunctionAgent(
+    
+)
+
+exploration_agent=FunctionAgent()
+
+Writing_plan_agent=FunctionAgent()
+
+Writing_agent=FunctionAgent() #Eux sont plusieurs,mais en sequentiel,par ce qu'ollama n'autorise pas les reqeutes en parallele
+
+Review_agent=FunctionAgent()
+
+doc_agent=FunctionAgent()
