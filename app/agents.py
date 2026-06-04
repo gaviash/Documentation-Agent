@@ -25,9 +25,10 @@ import os
 load_dotenv()
 
 def load_prompt(filenames : list[str]) -> str:
-    parts = []
+    p = Path(__file__).resolve().parent.parent / str(os.getenv("PROMPTS_DIR"))
+    parts = [(p / "general_prompt.md").read_text(encoding="utf-8").strip()]
     for file in filenames :
-        path = Path(__file__).resolve().parent.parent / str(os.getenv("PROMPTS_DIR")) / file
+        path = p / file
         parts.append(path.read_text(encoding="utf-8").strip())
     return "\n\n".join(part for part in parts if part)
 
