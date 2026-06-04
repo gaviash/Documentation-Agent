@@ -46,7 +46,8 @@ brainstorming_agent=FunctionAgent(
     name="BrainstormingAgent",
     llm=first_model,
     system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.md"]),
-    tools=[web_fetch,web_search,read_file,write_file,shell,ask_user]
+    tools=[web_fetch,web_search,read_file,write_file,shell],
+    timeout=100.0
     
     
 )

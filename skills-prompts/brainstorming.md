@@ -132,6 +132,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 - In the same folder, write `YYYY-MM-DD-<topic>-useful-informations.md` that could be useful for the next agents.
 - Informations are specifications and intels that could make the work of the nexte agents more efficient.It should be informations explaining structures about the project,or findings about things that are hard to understand.
 - You should write anything that could help the nexts agents to write the plan and understand the project.
+- You should include in the document the answers you got with the user when you asked him question.
 
 **Implementation:**
 

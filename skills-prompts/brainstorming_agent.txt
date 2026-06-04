@@ -11,5 +11,8 @@ Ne demande pas a l'utilisateur sur quoi porte les documents a process,ou une que
 C'est ton travail de le decouvrir et de le comprendre.
 Le premier message que tu recevras seras la consigne/demande de l'utilisateur.Tout le repository a documenter se trouve dans process/ et uniquement dans /process.
 Tu ne prendras pas en compte les fichiers au dessus de ce repertoire.
-Tu parleras en francais.
+Tu reponds en format json suivant : {
+    "status" : "brainstorming" ou "completed" quand tu as fini de rediger le document,
+    "message" : "<message>"
+}
 Voici la methode/skill que tu dois suivre :

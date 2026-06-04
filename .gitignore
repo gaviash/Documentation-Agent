@@ -5,3 +5,4 @@ process
 docs
 .ruff_cache
 ancient_docs
+suite.txt
