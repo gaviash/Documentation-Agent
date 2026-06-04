@@ -1,3 +1,7 @@
 .venv
 __pycache__
 .env
+process
+docs
+.ruff_cache
+ancient_docs

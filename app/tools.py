@@ -575,4 +575,4 @@ def ask_user(message : str):
     Returns:
     A dictionary with success=True and response set to the user's answer.
     """
-    return _tool_result(success=True,response=input(message))
+    return _tool_result(success=True,response=input(message + "\n\n"))

@@ -3,23 +3,57 @@ from tools import (
     web_search,
     read_file,
     write_file,
-    shell
+    shell,
+    ask_user
 )
 
 from llama_index.core.agent import (
     FunctionAgent
 )
 
-from llama_index.llms.ollama import Ollama
-import os 
+from llama_index.core.agent.workflow import (
+    AgentStream,
+    ToolCall,
+    ToolCallResult
+)
+
+from llama_index.llms.ollama import Ollama 
 from dotenv import load_dotenv
+from pathlib import Path
+import os
 
 load_dotenv()
 
+def load_prompt(filenames : list[str]) -> str:
+    parts = []
+    for file in filenames :
+        path = Path(__file__).resolve().parent.parent / str(os.getenv("PROMPTS_DIR")) / file
+        parts.append(path.read_text(encoding="utf-8").strip())
+    return "\n\n".join(part for part in parts if part)
+
+first_model = Ollama(
+    model=str(os.getenv("OLLAMA_MODEL")),
+    temperature=0.1,
+    context_window=262144,
+    request_timeout=100.0,
+    base_url="https://ollama.com",
+    headers={
+        "Authorization": f"Bearer {os.getenv('OLLAMA_API_KEY')}"
+    }
+)
+
 brainstorming_agent=FunctionAgent(
+    name="BrainstormingAgent",
+    llm=first_model,
+    system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.md"]),
+    tools=[web_fetch,web_search,read_file,write_file,shell,ask_user]
+    
     
 )
 
+
+
+"""
 exploration_agent=FunctionAgent()
 
 Writing_plan_agent=FunctionAgent()
@@ -29,3 +63,21 @@ Writing_agent=FunctionAgent() #Eux sont plusieurs,mais en sequentiel,par ce qu'o
 Review_agent=FunctionAgent()
 
 doc_agent=FunctionAgent()
+"""
+
+async def query(message,memory,agent : FunctionAgent):
+    handler = agent.run(user_msg=message,memory=memory,max_iterations=30)
+    async for event in handler.stream_events():
+        if isinstance(event, AgentStream):
+            if event.delta:
+                continue
+        elif isinstance(event, ToolCall):
+            print("\n[TOOL CALL]")
+            print(f"Tool : {event.tool_name} \n")
+            print(f"Arguments : {event.tool_kwargs}")
+        elif isinstance(event,ToolCallResult):
+            print("\n[TOOL RESULT]")
+            print(f"Result : {str(event.tool_output)[:1000]}")
+    
+    response = await handler
+    return response
