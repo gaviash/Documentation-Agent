@@ -41,7 +41,13 @@ async def brainstorming_launch_debug(workflow_id : str) :
 
 
 async def explorer_launch_debug(workflow_id : str):
-    response = await query(message="Go",memory=explorer_memory,agent=exploration_agent,step="exploration",workflow_run_id=workflow_id)
+    response = await query(
+        message=("Explore"),
+        memory=explorer_memory,
+        agent=exploration_agent,
+        step="exploration",
+        workflow_run_id=workflow_id
+    )
     print(response)
     return response
 

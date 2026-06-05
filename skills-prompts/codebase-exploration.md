@@ -33,15 +33,19 @@ You receive:
 
 First read the design, useful information, and explicit workflow instruction to understand audience, document type, scope, and preferences.
 
+Default execution: read the brainstorming docs in `docs/`, list `process/` first, select only necessary files, use multi-file reads for selected small files with `max_chars` between 4000 and 12000, sample representative tests only, then write `docs/codebase-map.md`, `docs/technical-findings.md`, and `docs/planner-brief.md`. Reply completed only after those files are written.
+
 ## Outputs
 
 Write Markdown reports in the same `docs/` folder where the brainstorming documents are found:
 
 1. `codebase-map.md`: repository map.
-2. `technical-findings.md`: runtime behavior, modules, APIs, tools, data/state, config, tests, deployment, implementation details.
+2. `technical-findings.md`: runtime behavior, modules, APIs, tools, data/state, config, tests, deployment, implementation details.But its a dense technical brief for the planner, not final documentation.
 3. `planner-brief.md`: concise planner handoff.
 
 For very small projects, you may combine reports, but all required sections must still exist.
+
+Keep reports concise and planner-oriented. Prefer bullets/tables over prose. Do not write tutorial text, beginner explanations, or final-document copy. `technical-findings.md` should usually stay under 1500 words.
 
 ## Exploration Rules
 
@@ -103,9 +107,9 @@ Mandatory inspection does not mean reading every file fully. It means gathering 
 
 ### Depth Control
 
-Read selectively. Prefer multi-file reads for small, known-relevant files, but do not bulk-read many files just because the tool supports it. First list/discover paths, then choose the smallest useful set.
+Read selectively. First list/discover paths, then choose the smallest useful set. If several chosen files are each justified, read them together with one multi-file read; do not read them one by one. For exploratory reads, use `max_chars` between 6000 and 12000 unless a full file is clearly necessary. Never bulk-read a directory or broad file group just because the tool supports it.
 
-Prioritize entrypoints, imported core files, business/domain logic, public APIs, tools/integrations, config/deployment, docs, and representative tests. For tests, read enough to understand intended behavior and coverage signals; do not ingest every test file unless each is clearly needed. For large files, read relevant sections or use `max_chars`/line ranges before reading the full file. Summarize unread parts when relevant.
+Prioritize entrypoints, imported core files, business/domain logic, public APIs, tools/integrations, config/deployment, docs, and representative tests. For tests, ingest the strict minimum: inspect test file names first, then read only small targeted snippets or the few representative files needed to prove behavior/coverage. Never read all tests by default. For large files, read relevant sections or use `max_chars`/line ranges before reading the full file. Summarize unread parts when relevant.
 
 ## Required Report: `codebase-map.md`
 
@@ -168,6 +172,8 @@ Factual uncertainties the planner should avoid, mark as assumptions, or pass onw
 
 ## Required Report: `technical-findings.md`
 
+This file is a compact planner brief. Do not write narrative documentation, tutorials, exhaustive inventories, or long per-component explanations. Use tables and terse bullets. Target 700-1200 words; exceed only if the codebase is genuinely large.
+
 Use this structure:
 
 ```markdown
@@ -177,7 +183,7 @@ Use this structure:
 Concise technical description.
 
 ## 2. Runtime Architecture
-How the app starts and components interact. Add a simple diagram if useful:
+How the app starts and components interact. Use one compact diagram if useful:
 
 ```text
 Client -> API -> Service/Agent -> Tools/Storage/External APIs
@@ -193,7 +199,7 @@ For each flow:
 5. Source paths
 
 ## 4. Public Interfaces
-Document discovered HTTP endpoints, CLI commands, UI routes/screens, exported functions/classes, and expected config files.
+Compact table of discovered HTTP endpoints, CLI commands, UI routes/screens, exported functions/classes, and expected config files.
 
 ## 5. Internal Components
 For each major component:
@@ -218,23 +224,19 @@ Separate:
 Do not document framework-default status codes as confirmed unless code or tests prove them.
 
 ## 8. Testing Findings
-What is covered, mocked, missing, and what tests reveal about intended behavior.
+Keep this concise: summarize coverage signals, major mocked areas, and important gaps only. Do not list every test case.
 
 ## 9. Deployment And Operations
-Dockerfile, Makefile/scripts, runtime command, exposed ports, env vars, CI/CD. Inspect CI files if present. Do not say CI/CD is absent unless checked.
+Brief facts about Dockerfile, Makefile/scripts, runtime command, exposed ports, env vars, CI/CD. Inspect CI files if present. Do not say CI/CD is absent unless checked.
 
 ## 10. Documentation-Relevant Gaps
 Examples: empty README, behavior inferred from tests only, missing error docs, unclear deployment command, undocumented env variable.
 
 ## 11. Source-Grounded Facts
-Concise important facts with source paths.
+Max 10 concise important facts with source paths.
 
 ## 12. Assumptions And Uncertainties
-Separate confirmed facts, reasonable assumptions, unknowns.
-
-## 13. Inspection Log
-| Source | Inspected? | Used For | Notes |
-|---|---|---|---|
+Separate reasonable assumptions and unknowns. Do not repeat confirmed facts already listed above.
 ```
 
 ## Required Report: `planner-brief.md`
