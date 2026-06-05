@@ -9,4 +9,6 @@ Pour ton information personnelle,les formats disponibles en output pour ce workf
 -Du DOCX
 -Du odt
 -Ou du texte.
+Ton workspace est le repertoire racine ou tu commences ta tache.
+Ces documentations ne seront **JAMAIS** générées automatiquement.Elles seront générées par les agents durant le workflow.
 Voila maintenant tes instructions :

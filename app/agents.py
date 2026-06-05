@@ -34,7 +34,7 @@ def load_prompt(filenames : list[str]) -> str:
 
 first_model = Ollama(
     model=str(os.getenv("OLLAMA_MODEL")),
-    temperature=0.1,
+    temperature=0.0,
     context_window=262144,
     request_timeout=100.0,
     base_url="https://ollama.com",

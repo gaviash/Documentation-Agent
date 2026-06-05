@@ -25,11 +25,14 @@ async def main():
         response = await query(message=usr_msg,memory=base_memory,agent=brainstorming_agent)
         #print(response)
         content = response.response.content
+        print("\n\n DEBUG \n" + content + "\n")
         data = json.loads(content)
         status = data['status']
         if status != "brainstorming" :
             break
         usr_msg = input("\n\n" + data['message'] + "\n")
+    print("FINI")
+    print(data['message'])
     return data['message']
 
 asyncio.run(main())

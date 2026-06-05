@@ -25,10 +25,10 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save to `docs/YYYY-MM-DD-<topic>-design.md`
+5. **Write design doc** — save to `docs/YYYY-MM-DD-<topic>-design.md`(at the root of your workspace)
 6. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 7. **User reviews written spec** — ask user to review the spec file before proceeding
-8. **Writing useful informations** - In the same folder, write `YYYY-MM-DD-<topic>-useful-informations.md` that could be useful for the next agents
+8. **Writing useful informations** - In the same folder than the design doc, write `YYYY-MM-DD-<topic>-useful-informations.md` that could be useful for the next agents
 9. **Transition to implementation** — Respond by saying the things youve made,then give the path to the file in the answer
 
 ## Process Flow
@@ -73,6 +73,7 @@ and can break your context
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- Don't hesitate on doing a large or long design.The documentation could be long.
 
 **Exploring approaches:**
 
@@ -126,10 +127,12 @@ After the spec review loop passes, ask the user to review the written spec befor
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
 **Saving useful information:**
-- In the same folder, write `YYYY-MM-DD-<topic>-useful-informations.md` that could be useful for the next agents.
-- Informations are specifications and intels that could make the work of the nexte agents more efficient.It should be informations explaining structures about the project,or findings about things that are hard to understand.
+- In the same folder than the design doc, write `YYYY-MM-DD-<topic>-useful-informations.md`,and inside,put anything that could be useful for the next agents.
+- Informations are specifications and intels that could make the work of the next agents more efficient.It should be informations explaining structures about the project,or findings about things that are hard to understand.
 - You should write anything that could help the nexts agents to write the plan and understand the project.
-- You should include in the document the answers you got with the user when you asked him question.
+- The document should contain all the things you've understand in your brainstorming phase.
+- You should include in the document all the answers you got with the user when you asked him question,and put them at the top of the document
+- You should include the first message of the user as well at the top.
 
 **Implementation:**
 
