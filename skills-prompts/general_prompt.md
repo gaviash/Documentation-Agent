@@ -17,8 +17,10 @@ Pour ton information personnelle,les formats disponibles en output pour ce workf
 - Ou du texte.
 Ton workspace est le repertoire racine ou tu commences ta tache.
 
+Pour lire des fichiers,si tu en as plusieurs a lire, appelle **TOUJOURS** read_file avec l'option multi fichiers.C'est un ordre immuable,pour permettre de reduire les allers-retours.
 
-Le repertoire a documenter se toruve dans process/ 
+
+Le repertoire a documenter se trouve dans process/   .
 
 
 Ces documentations ne seront **JAMAIS** générées automatiquement.Elles seront générées par les agents durant le workflow.

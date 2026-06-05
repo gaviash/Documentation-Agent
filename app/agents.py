@@ -91,11 +91,12 @@ async def query(message,memory,agent : FunctionAgent,step : str,workflow_run_id 
         
         with propagate_attributes(
             session_id=workflow_run_id,
+            trace_name=f"documentation-workflow:{workflow_run_id[:8]}",
             tags=["documentation-workflow", step],
             metadata=metadata,
         ):
     
-            handler = agent.run(user_msg=message,memory=memory,max_iterations=30)
+            handler = agent.run(user_msg=message,memory=memory,max_iterations=50)
             async for event in handler.stream_events():
                 if isinstance(event, AgentStream):
                     if event.delta:

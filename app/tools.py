@@ -2,6 +2,7 @@ from pathlib import Path
 from tavily import TavilyClient
 from dotenv import load_dotenv
 from typing import Literal, Optional
+import json
 import os
 import subprocess
 import shutil
@@ -13,7 +14,7 @@ MAX_SHELL_OUTPUT_CHARS = 10_000
 DEFAULT_SHELL_OUTPUT_CHARS = MAX_SHELL_OUTPUT_CHARS
 MAX_SHELL_TIMEOUT_SECONDS = 300
 DEFAULT_SHELL_TIMEOUT_SECONDS = 30
-MAX_FILE_OUTPUT_CHARS = 30_000
+MAX_FILE_OUTPUT_CHARS = 20_000
 DEFAULT_FILE_OUTPUT_CHARS = 10_000
 WORKSPACE = Path(os.getenv("WORKSPACE_DIR", os.getcwd())).resolve()
 _tavily_client = None
@@ -91,45 +92,13 @@ def _truncate_text(text, limit, marker="\n...[truncated output]...\n"):
     return text[:head_len] + marker + text[-tail_len:], True
 
 
-def read_file(
+def _read_one_file(
     path: str,
-    encoding: str = "utf-8",
-    max_chars: Optional[int] = DEFAULT_FILE_OUTPUT_CHARS,
-    start_line: Optional[int] = None,
-    end_line: Optional[int] = None,
-) -> dict:
-    """Read a text file from the workspace.
-
-    Use this tool when the agent needs to inspect source code, configuration,
-    notes, logs, or any other text file before answering or editing. The path is
-    resolved relative to the configured WORKSPACE_DIR, or to the current working
-    directory when WORKSPACE_DIR is not set. Absolute paths are accepted only if
-    they remain inside the workspace.
-
-    Parameters:
-    - path: File path to read, relative to the workspace whenever possible.
-    - encoding: Text encoding used to decode the file. Defaults to "utf-8".
-    - max_chars: Maximum number of characters returned in content. Negative
-      values or None disable truncation. Values above MAX_FILE_OUTPUT_CHARS are
-      capped to protect the agent context.
-    - start_line: Optional 1-based first line to return. When omitted, reading
-      starts at the beginning of the file.
-    - end_line: Optional 1-based last line to return, inclusive. When omitted,
-      reading continues to the end of the file.
-
-    Returns:
-    A dictionary with:
-    - success: True when the file was read successfully.
-    - error: Error message when success is False, otherwise None.
-    - path: Resolved absolute file path when available.
-    - content: File content, possibly truncated.
-    - truncated: True when content was shortened.
-    - original_chars: Returned range character count before truncation.
-    - full_file_chars: Full file character count before line filtering.
-    - total_lines: Number of lines in the full file.
-    - returned_start_line: First returned line, or None when the file is empty.
-    - returned_end_line: Last returned line, or None when the file is empty.
-    """
+    encoding,
+    max_chars,
+    start_line,
+    end_line,
+):
     try:
         safe = _safe_path(path)
         full_content = safe.read_text(encoding=encoding)
@@ -169,6 +138,130 @@ def read_file(
         )
     except Exception as e:
         return _tool_result(False, str(e), path=path, content=None, truncated=False)
+
+
+def _normalize_read_paths(path, paths):
+    if paths is None:
+        requested_paths = []
+    elif isinstance(paths, str):
+        try:
+            parsed = json.loads(paths)
+        except json.JSONDecodeError:
+            parsed = paths
+        if isinstance(parsed, list):
+            requested_paths = parsed
+        else:
+            requested_paths = [paths]
+    else:
+        requested_paths = list(paths)
+
+    if path is not None:
+        requested_paths.insert(0, path)
+
+    return requested_paths
+
+
+def read_file(
+    path: Optional[str] = None,
+    paths: Optional[list[str]] = None,
+    encoding: str = "utf-8",
+    max_chars: Optional[int] = DEFAULT_FILE_OUTPUT_CHARS,
+    start_line: Optional[int] = None,
+    end_line: Optional[int] = None,
+) -> dict:
+    """Read one or more text files from the workspace.
+
+    Use this tool when the agent needs to inspect source code, configuration,
+    notes, logs, or any other text file before answering or editing. Use `path`
+    for one file. Use `paths` for several files in one call; this is almost
+    always more efficient than separate sequential reads because the files are
+    returned together and reduce agent/tool back-and-forth. Paths are resolved
+    relative to WORKSPACE_DIR, or to the current working directory when
+    WORKSPACE_DIR is not set. Absolute paths are accepted only if they remain
+    inside the workspace.
+
+    Parameters:
+    - path: Single file path to read, relative to the workspace whenever possible.
+    - paths: Optional list of file paths to read with the same options. This
+      must be a real list/array, not a JSON-encoded string. Never wrap the
+      whole list in quotes. Correct: paths=["a.py", "b.py"]. Incorrect:
+      paths='["a.py", "b.py"]'. If `paths` starts and ends with quote marks,
+      it is wrong. When several files are needed, prefer one multi-file call
+      over many one-file calls.
+    - encoding: Text encoding used to decode files. Defaults to "utf-8".
+    - max_chars: Maximum characters returned. For one file, this is the file
+      limit. For multiple files, this is the total budget shared across files.
+      Negative values or None disable truncation. Values above
+      MAX_FILE_OUTPUT_CHARS are capped.
+    - start_line: Optional 1-based first line to return for every file.
+    - end_line: Optional 1-based last line to return for every file, inclusive.
+
+    Returns:
+    For a single file, the original read_file result shape is preserved:
+    success/error/path/content/truncated/original_chars/full_file_chars/
+    total_lines/returned_start_line/returned_end_line.
+
+    For multiple files, returns:
+    - success: True when every file was read successfully.
+    - error: Combined error message when any file failed, otherwise None.
+    - files: List of per-file result dictionaries.
+    - file_count: Number of requested files.
+    - successful_count: Number of files read successfully.
+    - failed_count: Number of failed file reads.
+    - max_chars: Effective total output budget.
+    """
+    requested_paths = _normalize_read_paths(path, paths)
+
+    if not requested_paths:
+        return _tool_result(
+            False,
+            "Provide either path or paths.",
+            path=path,
+            files=[],
+            file_count=0,
+            successful_count=0,
+            failed_count=0,
+        )
+
+    if len(requested_paths) == 1:
+        return _read_one_file(
+            requested_paths[0],
+            encoding,
+            max_chars,
+            start_line,
+            end_line,
+        )
+
+    total_limit = _normalize_limit(
+        max_chars,
+        DEFAULT_FILE_OUTPUT_CHARS,
+        MAX_FILE_OUTPUT_CHARS,
+        allow_unlimited=True,
+    )
+    per_file_limit = None if total_limit is None else max(0, total_limit // len(requested_paths))
+    files = [
+        _read_one_file(
+            file_path,
+            encoding,
+            per_file_limit,
+            start_line,
+            end_line,
+        )
+        for file_path in requested_paths
+    ]
+    failed = [result for result in files if not result.get("success")]
+    error = "; ".join(
+        f"{result.get('path')}: {result.get('error')}" for result in failed
+    ) or None
+    return _tool_result(
+        not failed,
+        error,
+        files=files,
+        file_count=len(files),
+        successful_count=len(files) - len(failed),
+        failed_count=len(failed),
+        max_chars=total_limit,
+    )
 
 
 def write_file(
