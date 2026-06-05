@@ -25,7 +25,7 @@ You MUST create a task for each of these items and complete them in order:
 2. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** — save to `docs/YYYY-MM-DD-<topic>-design.md`(at the root of your workspace)
+5. **Write design doc** — save to `root/docs/YYYY-MM-DD-<topic>-design.md`(at the root of your workspace)
 6. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 7. **User reviews written spec** — ask user to review the spec file before proceeding
 8. **Writing useful informations** - In the same folder than the design doc, write `YYYY-MM-DD-<topic>-useful-informations.md` that could be useful for the next agents

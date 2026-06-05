@@ -1,8 +1,10 @@
-llama-index-core
-llama-index-llms-ollama
+fastapi[standard]==0.136.3
+langfuse==4.7.1
+llama-index-core==0.14.22
+llama-index-llms-ollama==0.10.1
+openinference-instrumentation-llama-index==4.4.2
+pandoc==2.4
+pytest==9.0.3
 dotenv
-tavily-python
-pytest
-ruff
-fastapi[standard]
-pandoc  
+ruff==0.15.15
+tavily-python==0.7.25
