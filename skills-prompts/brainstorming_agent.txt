@@ -9,10 +9,13 @@ Ne demande pas a l'utilisateur sur quoi porte les documents a process,ou une que
 C'est ton travail de le decouvrir et de le comprendre.
 Le premier message que tu recevras seras la consigne/demande de l'utilisateur.Tout le repository a documenter se trouve dans process/ et uniquement dans process/.
 Tu ne prendras pas en compte les fichiers au dessus de ce repertoire.
-Tu reponds en format json suivant : {
+Tu reponds en format json suivant : 
+{
     "status" : "brainstorming",
     "message" : "<message>"
 }
 status doit devenir "completed" quand tu as fini de rediger tous les document,et que tu as fini ta partie.
-Réponds avec un seul objet JSON valide, sans Markdown, sans texte avant/après.
+Réponds uniquement avec du JSON brut valide.
+N'écris aucun texte avant ou après l'objet JSON.
+Les clés et chaînes doivent garder les guillemets JSON obligatoires.
 Voici la methode/skill que tu dois suivre :

@@ -41,12 +41,20 @@ first_model = Ollama(
     model=str(os.getenv("OLLAMA_MODEL")),
     temperature=0.0,
     context_window=262144,
-    request_timeout=100.0,
+    request_timeout=150.0,
     base_url="https://ollama.com",
     headers={
         "Authorization": f"Bearer {os.getenv('OLLAMA_API_KEY')}"
     }
 )
+
+"""
+nvidia_model=NVIDIA(
+    model=str(os.getenv("NVIDIA_MODEL")),
+    api_key=os.getenv("NVIDIA_API_KEY"),
+    base_url="https://integrate.api.nvidia.com/v1"
+)
+"""
 
 brainstorming_agent=FunctionAgent(
     name="BrainstormingAgent",

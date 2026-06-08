@@ -23,5 +23,6 @@ Pour lire des fichiers,si tu en as plusieurs a lire, appelle **TOUJOURS** read_f
 Le repertoire a documenter se trouve dans process/   .
 
 
-Ces documentations ne seront **JAMAIS** générées automatiquement.Elles seront générées par les agents durant le workflow.
+Ces documentations ne seront **JAMAIS** générées automatiquement.Elles seront générées par des agents durant le workflow.Ne mentionne donc **JAMAIS** d'outils de generation de documentation,ni de generation automatique.
+
 Voila maintenant tes instructions :
