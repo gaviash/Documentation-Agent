@@ -107,7 +107,7 @@ Mandatory inspection does not mean reading every file fully. It means gathering 
 
 ### Depth Control
 
-Read selectively. First list/discover paths, then choose the smallest useful set. If several chosen files are each justified, read them together with one multi-file read; do not read them one by one. For exploratory reads, use `max_chars` between 6000 and 12000 unless a full file is clearly necessary. Never bulk-read a directory or broad file group just because the tool supports it.
+Read selectively. First list/discover paths, then choose the smallest useful set. Read small and structurally important files before files likely to be large. Files that may be voluminous must be inspected last, after the smaller entrypoints, configs, docs, and core modules have established enough context to target only relevant sections. If several chosen files are each justified, read them together with one multi-file read; do not read them one by one. For exploratory reads, use `max_chars` between 6000 and 12000 unless a full file is clearly necessary. Never bulk-read a directory or broad file group just because the tool supports it.
 
 Prioritize entrypoints, imported core files, business/domain logic, public APIs, tools/integrations, config/deployment, docs, and representative tests. For tests, ingest the strict minimum: inspect test file names first, then read only small targeted snippets or the few representative files needed to prove behavior/coverage. Never read all tests by default. For large files, read relevant sections or use `max_chars`/line ranges before reading the full file. Summarize unread parts when relevant.
 

@@ -49,6 +49,13 @@ first_model = Ollama(
 )
 
 """
+groq_model = Groq(
+    model=os.getenv("GROQ_MODEL"), # type: ignore
+    api_key=os.getenv("GROQ_API_KEY")
+)
+"""
+
+"""
 nvidia_model=NVIDIA(
     model=str(os.getenv("NVIDIA_MODEL")),
     api_key=os.getenv("NVIDIA_API_KEY"),
@@ -61,7 +68,7 @@ brainstorming_agent=FunctionAgent(
     llm=first_model,
     system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.md"]),
     tools=[web_fetch,web_search,read_file,write_file,shell],
-    timeout=100.0
+    timeout=200.0
     
     
 )
@@ -70,13 +77,20 @@ exploration_agent=FunctionAgent(
     name="ExplorationAgent",
     llm=first_model,
     system_prompt=load_prompt(["codebase-exploration.md"]),
-    tools=[read_file,write_file,shell]
+    tools=[read_file,write_file,shell],
+    timeout=200
 )
 
 
-"""
-Writing_plan_agent=FunctionAgent()
+Writing_plan_agent=FunctionAgent(
+    name="WritingPlanAgent",
+    llm=first_model,
+    system_prompt=load_prompt(["redac-planning.md"]),
+    tools=[read_file,write_file,shell],
+    timeout=200
+)
 
+"""
 Writing_agent=FunctionAgent() #Eux sont plusieurs,mais en sequentiel,par ce qu'ollama n'autorise pas les reqeutes en parallele
 
 Review_agent=FunctionAgent()

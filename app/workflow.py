@@ -9,6 +9,7 @@ from llama_index.core.workflow import (
 from agents import (
     brainstorming_agent,
     exploration_agent,
+    Writing_plan_agent,
     query
 )
 import json
@@ -20,6 +21,18 @@ import asyncio
 
 base_memory = Memory(token_limit=150000)
 explorer_memory = Memory(token_limit=150000)
+planner_memory = Memory(token_limit=150000)
+
+
+def clean_json_response(content: str) -> str:
+    content = content.strip()
+    if content.startswith("```json"):
+        content = content.removeprefix("```json").strip()
+    elif content.startswith("```"):
+        content = content.removeprefix("```").strip()
+    if content.endswith("```"):
+        content = content.removesuffix("```").strip()
+    return content
 
 
 async def brainstorming_launch_debug(workflow_id : str) :
@@ -30,6 +43,7 @@ async def brainstorming_launch_debug(workflow_id : str) :
         #print(response)
         content = response.response.content
         print("\n\n DEBUG \n" + content + "\n")
+        content = clean_json_response(content)
         data = json.loads(content)
         status = data['status']
         if status != "brainstorming" :
@@ -46,6 +60,17 @@ async def explorer_launch_debug(workflow_id : str):
         memory=explorer_memory,
         agent=exploration_agent,
         step="exploration",
+        workflow_run_id=workflow_id
+    )
+    print(response)
+    return response
+
+async def planning_launch_debug(workflow_id : str):
+    response = await query(
+        message="Your turn.Go on and follow your instructions",
+        memory= planner_memory,
+        agent=Writing_plan_agent,
+        step="planning",
         workflow_run_id=workflow_id
     )
     print(response)
