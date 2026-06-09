@@ -39,13 +39,13 @@ Default execution: read the brainstorming docs in `docs/`, list `process/` first
 
 Write Markdown reports in the same `docs/` folder where the brainstorming documents are found:
 
-1. `codebase-map.md`: repository map.
-2. `technical-findings.md`: runtime behavior, modules, APIs, tools, data/state, config, tests, deployment, implementation details.But its a dense technical brief for the planner, not final documentation.
-3. `planner-brief.md`: concise planner handoff.
+1. `codebase-map.md`: complete repository map and inspection ledger.
+2. `technical-findings.md`: dense factual technical report covering runtime behavior, modules, APIs, tools, data/state, config, tests, deployment, CI, and implementation details.
+3. `planner-brief.md`: concise planner handoff summarizing the previous two reports.
 
 For very small projects, you may combine reports, but all required sections must still exist.
 
-Keep reports concise and planner-oriented. Prefer bullets/tables over prose. Do not write tutorial text, beginner explanations, or final-document copy. `technical-findings.md` should usually stay under 1500 words.
+Keep reports planner-oriented. Prefer bullets/tables over prose. Do not write tutorial text, beginner explanations, or final-document copy. `technical-findings.md` is the main exploration report and should usually be 1500-2500 words for a small/medium codebase. `planner-brief.md` must stay short and must not compensate for missing details in the other reports.
 
 ## Exploration Rules
 
@@ -113,6 +113,15 @@ Prioritize entrypoints, imported core files, business/domain logic, public APIs,
 
 ## Required Report: `codebase-map.md`
 
+This file should be more than a tiny tree. It is the planner's repository index.
+
+It must:
+- list all important top-level files and directories
+- include frontend, tests, deployment, CI, config, docs, and scripts when present
+- mark whether each important source was fully inspected, partially inspected, only listed, or not inspected
+- use ASCII-only trees to avoid encoding issues
+- avoid hiding uninspected areas behind broad summaries
+
 Use this structure:
 
 ```markdown
@@ -172,7 +181,22 @@ Factual uncertainties the planner should avoid, mark as assumptions, or pass onw
 
 ## Required Report: `technical-findings.md`
 
-This file is a compact planner brief. Do not write narrative documentation, tutorials, exhaustive inventories, or long per-component explanations. Use tables and terse bullets. Target 700-1200 words; exceed only if the codebase is genuinely large.
+This file is the main factual exploration report. It must be substantially denser than `codebase-map.md` and `planner-brief.md`.
+
+Do not write narrative documentation, tutorials, or final-document copy. Use tables and terse bullets, but include enough detail that the writer does not need to rediscover the codebase.
+
+Target 1500-2500 words for a small/medium codebase. If it is much shorter, it is probably too shallow.
+
+For each major area, include concrete source-grounded facts:
+- entrypoints and request/runtime flow
+- endpoints, CLI commands, UI routes/screens, or exported interfaces
+- important functions/classes and their responsibilities
+- tools/integrations and safety limits
+- config/env vars and defaults
+- data/session/storage behavior
+- tests and what they actually prove
+- deployment, Docker, CI/CD, scripts, and operational constraints
+- gaps, risks, assumptions, and unknowns
 
 Use this structure:
 
@@ -241,6 +265,12 @@ Separate reasonable assumptions and unknowns. Do not repeat confirmed facts alre
 
 ## Required Report: `planner-brief.md`
 
+This file must summarize, not compensate.
+
+Do not introduce important new facts here that are missing from `codebase-map.md` or `technical-findings.md`. If a fact matters to the planner, it must first appear in one of the two detailed reports.
+
+Keep this file short: roughly 400-700 words. It should tell the planner where to focus, which sources to trust, and what risks to preserve.
+
 Use this structure:
 
 ```markdown
@@ -308,6 +338,9 @@ Before final reports:
 2. list mandatory files discovered but not inspected
 3. move uncertain claims to assumptions, unknowns, or planner open questions
 4. ensure planner recommendations are source-grounded
+5. ensure `codebase-map.md` is a useful repository index, not just a short tree
+6. ensure `technical-findings.md` contains the detailed factual substance
+7. ensure `planner-brief.md` only summarizes facts already present in the two detailed reports
 
 ## Completion Criteria
 
@@ -316,7 +349,10 @@ You are done only when:
 - target structure is inspected
 - important files are read or marked unread
 - tests/config/deployment assets are checked when present
+- frontend and CI/CD assets are checked when present
 - required reports are written
+- `technical-findings.md` is the densest and most informative report
+- `planner-brief.md` does not contain important facts absent from the other reports
 - planner can proceed without conversation history
 
 ## Final Response Format

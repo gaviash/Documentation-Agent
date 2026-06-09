@@ -64,7 +64,7 @@ Complete these steps in order:
    Infer audience, scope, desired output format, detail level, exclusions, risks, and likely documentation style from the user's request and the project context.
 
 3. **Ask only user-owned questions**  
-   Ask one concise question only if it concerns a user-owned documentation decision, such as audience, format, depth, exclusions, priority, tone, or success criteria. Never ask the user about repository facts or codebase content.
+   Ask concise questions only if it concerns a user-owned documentation decision, such as audience, format, depth, exclusions, priority, tone, or success criteria. Never ask the user about repository facts or codebase content.
 
 4. **Propose approaches and get the user's choice**  
    Present 2-3 documentation approaches with trade-offs and your recommendation. Ask the user to choose one approach before writing the documents. The options must be about documentation direction, not about repository facts.
@@ -93,11 +93,15 @@ It must not be:
 - onboarding documentation
 - a detailed draft of final sections
 
-It must be detailed and actionable for later agents. Do not write a short one-page note.
+It must be detailed and actionable for later agents. Do not write a short orientation note.
 
-Target length: about 1200-2000 words for a normal small/medium codebase. If the codebase is very small, the document may be shorter, but it must still contain concrete codebase observations and enough orientation for the next agents.
+Target length: about 1200-2000 words for a normal small/medium codebase. If the document is much shorter, it is probably too shallow unless the codebase is genuinely tiny.
 
 The design document must include substantial information about the inspected codebase. It should not only describe the user's preferences or documentation strategy. It must connect the documentation direction to real source-grounded observations from `process/`.
+
+The design document must contain real developed content. Do not write mostly headings, placeholders, generic bullets, or vague intentions. Each major section must include useful explanatory substance that the next agents can rely on.
+
+For each important area discovered, include at least 2-4 concrete facts from inspected files. Cover relevant areas such as entrypoints, runtime flow, endpoints or interfaces, frontend, tools, config/env, tests, Docker/CI, and security/safety limits when present.
 
 Include:
 
@@ -167,6 +171,8 @@ Before responding completed, verify:
 - the design document is detailed enough to guide later agents
 - the design document contains substantial source-grounded information about the inspected codebase
 - the design document names important discovered paths and explains why they matter for documentation
+- the design document does not read like a short summary; it includes concrete facts for the main codebase areas
+- the design document contains real developed content, not just headings, placeholders, or vague bullets
 - the useful informations document is detailed enough to be a real handoff
 - assumptions and open questions are explicit
 - no unsupported claims are presented as facts

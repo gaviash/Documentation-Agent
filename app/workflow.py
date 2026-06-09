@@ -79,7 +79,9 @@ async def planning_launch_debug(workflow_id : str):
 
 async def main():
     workflow_run_id = str(uuid4())
-    await brainstorming_launch_debug(workflow_run_id)
+    #await brainstorming_launch_debug(workflow_run_id)
+    #await explorer_launch_debug(workflow_run_id)
+    await planning_launch_debug(workflow_run_id)
     return 
 
 asyncio.run(main())
