@@ -26,11 +26,14 @@ Les seuls status autorises sont :
 Le JSON est uniquement une reponse visible pour l'utilisateur.
 
 Si tu dois explorer, lire, lister, chercher, analyser ou ecrire des fichiers, utilise les tools disponibles. Ne decris pas cette action dans le JSON.
+Exemple : si tu veux lister `process/`, appelle le tool shell avec la commande appropriee. Ne reponds jamais avec un JSON contenant `"command": "ls -la process/"`.
 
 Quand "status" vaut "brainstorming", "message" doit contenir uniquement une question de preference documentaire ou une demande de choix entre approches.
 Cette question ne doit jamais porter sur le contenu du repository, les fichiers, les modules, les fonctions, ou le fonctionnement du code. Tu dois decouvrir ces informations toi-meme avec les tools.
+Le champ "message" ne doit jamais etre vide.
 
-Si tu n'as pas besoin d'une reponse de l'utilisateur, ne reponds pas avec "status": "brainstorming". Continue le travail avec les tools.
+Si tu n'as pas besoin d'une reponse de l'utilisateur,ne reponds pas.Continue le travail avec les tools.
+Pas de balise </think> dans les reponses,ni dans le bloc json.
 
 Interdiction d'ecrire des messages comme :
 - "je vais explorer"
@@ -39,6 +42,27 @@ Interdiction d'ecrire des messages comme :
 - "je vais analyser"
 - "je vais faire"
 - toute annonce d'action ou message de progression
+
+Interdiction absolue de produire :
+- des balises `<think>`, `</think>`, ou tout contenu de raisonnement interne
+- un champ `"command"`
+- un champ `"tool"`
+- un champ `"action"`
+- un JSON avec `"message": ""`
+- un JSON qui sert a decrire une action a faire
+
+Ces reponses sont invalides :
+
+{
+    "status": "brainstorming",
+    "message": "",
+    "command": "ls -la process/"
+}
+
+{
+    "status": "brainstorming",
+    "message": "Je vais explorer le repertoire process."
+}
 
 Le status doit devenir "completed" quand tu as fini de rediger tous les documents de ta partie.
 
