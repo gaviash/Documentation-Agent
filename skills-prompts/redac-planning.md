@@ -1,36 +1,38 @@
 # Document Writing Planning
 
-Create a detailed writing plan for a substantial document through source review, audience analysis, structure design, drafting strategy, and review planning.
+Create one detailed writing plan for the final documentation.
 
-This skill is for planning document work, not for directly producing the final document.
+This skill is for planning only. Do not write the final documentation.
 
 ## Core Principles
 
-Always honor **YAGNI**, **KISS**, and **DRY**.
+Be practical, clear, source-grounded, and adaptive to the user's request.
 
-Be honest, direct, concise, and practical.
+User-specified preferences are binding constraints: document size, length, depth, architecture, structure, tone, format, examples, diagrams, priorities, exclusions, and writing style.
 
-Prefer a simple, high-quality document structure over an over-engineered one.
+The plan must match the requested document size and complexity. A small requested document needs a compact but precise plan; a larger or more technical document needs denser section instructions.
 
-Do not create unnecessary sections, diagrams, appendices, or review steps just because they are possible. Include them only when they improve the document for its target audience.
-
-Be adaptive to the user's request. User-specified preferences about document size, length, depth, architecture, structure, tone, format, examples, diagrams, priorities, exclusions, and writing style are binding constraints. Capture them explicitly in the plan and make the plan's level of detail match the requested document size and complexity.
+Prefer a simple, high-quality structure over unnecessary sections, diagrams, appendices, or review steps.
 
 ## Source Boundary
 
 The only authorized source directory is `docs/`.
 
-You must read only files located inside `docs/`. Do not read any file outside `docs/`, including source code, repository files, prompts, notes, drafts, research notes, configuration files, or files in other folders.
+Read only files located inside `docs/`. Do not read source code, repository files, prompts, notes, drafts, configuration files, or files in other folders.
 
-If useful information appears to be missing from `docs/`, record it as missing information or an open question. Do not search elsewhere to fill the gap.
+Use the user's request as context, but all factual planning assumptions about the project must be grounded in `docs/`.
 
-The user's request may be used as context, but all factual planning assumptions about the project must be grounded in `docs/`.
+If useful information is missing from `docs/`, record it as missing information or an open question. Do not search elsewhere.
+
+When `docs/` mention paths such as `app/main.py`, `app/tools.py`, `Dockerfile`, or `Makefile`, treat them as reported facts from documentation, not as files you personally inspected. In the plan, list only documents from `docs/` as source material. Code paths may appear inside section evidence for traceability, but never in the `Source Material From docs/` table as direct sources.
+
+Do not turn missing information or open questions into writing requirements. If Docker Compose, an endpoint, a Makefile target, an error format, an HTTP status code, an environment variable, or a command is not explicitly documented in `docs/`, mark it as missing or omit it.
 
 ## Output Boundary
 
 Write exactly one Markdown plan file inside `docs/`.
 
-Do not create folders. Do not create multiple files. Do not create source inventories, reports, section files, review notes, active-plan files, or draft placeholders as separate files.
+Do not create folders. Do not create multiple files. Do not create separate source inventories, reports, section files, review notes, active plans, or draft placeholders.
 
 Recommended file name:
 
@@ -46,157 +48,26 @@ docs/YYYY-MM-DD-<topic>-redaction-plan.md
 
 Everything needed by the next writing agent must be contained in that single Markdown file.
 
-## Responsibilities
+## Planning Requirements
 
-### 1. Context & Source Analysis
+The plan must include:
 
-Understand the user's goal, available source material in `docs/`, target document type, constraints, and desired output format.
+- document objective
+- user requirements and preferences
+- target audience and desired reader outcome
+- source inventory limited to files in `docs/`
+- assumptions, missing information, and open questions
+- recommended strategy and alternatives when useful
+- proposed document structure
+- detailed section-by-section writing instructions
+- style and formatting rules
+- rendering/export requirements
+- review checklist
+- execution phases
 
-Identify:
-
-- Document purpose
-- Target audience
-- Reader knowledge level
-- Requested document size, length, and level of detail
-- Required output format
-- User preferences about architecture, structure, tone, examples, diagrams, and writing style
-- Source materials available in `docs/`
-- Missing information
-- Constraints and assumptions
-- Deadline or polish level, if provided
-
-Skip this phase only if the user has already provided a complete source analysis or brief and the available `docs/` files confirm it.
-
-### 2. Audience & Success Criteria
-
-Define who the document is for and what the document must achieve.
-
-Capture:
-
-- Primary audience
-- Secondary audience
-- Desired reader action or understanding
-- Tone and style expectations
-- User-requested document size, length, and detail level
-- Required level of detail
-- Non-negotiable messages
-- Things to avoid
-
-If the audience is unclear, infer a reasonable default from the user's request and `docs/`, then mark it as an assumption.
-
-### 3. Document Strategy
-
-Design the document strategy before planning the content.
-
-Consider multiple approaches when appropriate, for example:
-
-- Executive-first vs technical-first
-- Short practical guide vs detailed reference
-- Narrative structure vs reference structure
-- Single Markdown document vs export-oriented report
-
-When there are meaningful alternatives, include 2-3 options with trade-offs and recommend one.
-
-### 4. Structure Design
-
-Create a clear document architecture.
-
-When the available `docs/` material supports it, prefer adding a simple codebase or architecture diagram near the introduction or early overview section. Include it only if it helps the reader understand the project structure, main components, or data flow.
-
-For each major section, define:
-
-- Purpose
-- Key points
-- Required sources from `docs/`
-- Concrete source-grounded facts to reuse
-- Inputs, outputs, parameters, limits, examples, or behaviors to mention when the section is technical
-- Expected length or depth
-- Dependencies on other sections
-- Visuals, tables, or diagrams needed, if any
-- Assumptions, missing details, or uncertainties specific to the section
-- Review criteria
-
-The structure must be easy for another agent or writer to execute without needing to rediscover the whole context.
-
-### 5. Writing Plan Creation
-
-Create a self-contained writing plan that explains exactly how to produce the document.
-
-The plan should include:
-
-- Document objective
-- Audience
-- User requirements and preferences
-- Assumptions
-- Source inventory limited to `docs/`
-- Recommended structure
-- Section-by-section writing instructions
-- Dense section-level evidence and technical details copied from `docs/`
-- Evidence and source requirements
-- Style rules
-- Review checklist
-- Export or rendering requirements
-- Open questions
-- Execution phases
+When the available `docs/` material supports it, prefer a simple codebase or architecture diagram near the introduction or early overview section. Include it only if it improves comprehension.
 
 The section-by-section instructions are the most important part of the plan. They must be detailed enough for a future writer to draft each section without rereading every source document.
-
-### 6. Review & Refinement Plan
-
-Plan how the document should be reviewed.
-
-Include checks for:
-
-- Completeness
-- Audience fit
-- Logical flow
-- Source grounding
-- Unsupported claims
-- Repetition
-- Clarity
-- Tone consistency
-- Formatting and export readiness
-
-For technical or factual documents, require that important claims are traceable to source material in `docs/`.
-
-## Workflow Process
-
-1. **Initial Analysis**  
-   Read the user's request and the files available in `docs/` only.
-
-2. **Source Review**  
-   Identify what information is available in `docs/`, what is missing, and what must be verified. Do not inspect any file outside `docs/`.
-
-3. **Audience & Objective Definition**  
-   Define the reader, document purpose, and success criteria.
-
-4. **Strategy Selection**  
-   Choose the best document approach. Present alternatives in the plan if the choice is not obvious.
-
-5. **Structure Design**  
-   Build the document outline and section logic.
-
-6. **Writing Plan Documentation**  
-   Write one Markdown plan file in `docs/`.
-
-7. **Review Plan**  
-   Add review criteria and quality gates inside the same plan file.
-
-8. **Next Step Recommendation**  
-   Tell the user whether the next step should be drafting, source collection inside `docs/`, review, or formatting.
-
-## Output Requirements
-
-- Do not write the final document unless the user explicitly asks to continue from the plan into drafting.
-- Create a self-contained plan that another agent or writer can follow.
-- Use only information from files in `docs/` plus the user's request.
-- Include document structure and section-level instructions.
-- Include multiple options with trade-offs when the structure or strategy is ambiguous.
-- Include open questions instead of inventing missing facts.
-- Include source-grounding rules for factual or technical claims.
-- Include formatting or export requirements when the user expects DOCX, ODT, PDF, HTML, or Markdown.
-- Create exactly one `.md` file in `docs/`.
-- Respond with the plan file path and a concise summary when the file is created.
 
 ## Plan File Template
 
@@ -231,7 +102,9 @@ Explain what the document must achieve.
 
 ## 3. Source Material From docs/
 
-List available sources from `docs/` and how they should be used.
+List only files that are actually inside `docs/`.
+
+Do not list repository source files such as `app/main.py`, `tools.py`, `Dockerfile`, `Makefile`, or CI files here. If those paths are mentioned by documents in `docs/`, include them only inside section evidence as traceability.
 
 | Source | Type | Relevance | Notes |
 |---|---|---|---|
@@ -277,6 +150,8 @@ List the concrete points that must be covered.
 Copy the relevant facts from `docs/` directly into this section instruction.
 
 Do not only point to source file names. Source names are useful for traceability, but the writer must have enough factual material here to draft the section.
+
+Include only facts explicitly supported by `docs/`. Do not add plausible defaults, common framework behavior, endpoints, status codes, Docker Compose examples, Makefile targets, commands, environment variables, limits, or error formats unless they are clearly present in `docs/`.
 
 For technical sections, include concrete names, paths, responsibilities, inputs, outputs, parameters, return values, constraints, limits, examples, defaults, data flow, dependencies, and known edge cases whenever they are available in `docs/`.
 
@@ -336,10 +211,13 @@ Give concrete tone, structure, transition, and clarity advice for this specific 
 ## 10. Review Checklist
 
 - [ ] Objective is clear
+- [ ] User requirements are reflected
 - [ ] Audience needs are addressed
 - [ ] Structure is logical
+- [ ] Section instructions contain enough evidence
+- [ ] Claims are grounded in `docs/`
 - [ ] Open questions are visible
-- [ ] Repetition is removed
+- [ ] Repetition is avoided
 - [ ] Tone is consistent
 - [ ] Formatting is ready for export
 
@@ -350,19 +228,17 @@ Give concrete tone, structure, transition, and clarity advice for this specific 
 ### Phase 2: Drafting
 
 ### Phase 3: Review
-
-
 ```
 
 ## Quality Standards
 
-- Be thorough but not verbose.
 - Make the plan executable by another writer or agent.
-- Prefer clarity over cleverness.
-- Do not bury important decisions in long prose.
-- Separate facts, assumptions, and open questions.
-- Use tables where they make the plan easier to execute.
+- Capture user preferences explicitly.
+- Keep facts, assumptions, and open questions separate.
+- Prefer concrete section-level evidence over abstract guidance.
+- Use tables when they make the plan easier to execute.
 - Require source grounding from `docs/` for technical, legal, financial, or factual claims.
+- Do not invent missing facts or convert open questions into documentation requirements.
 - Make document quality measurable through explicit review criteria.
 
 ## Completion Response

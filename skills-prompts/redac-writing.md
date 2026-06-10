@@ -16,6 +16,8 @@ Do not invent missing behavior. If a fact is not present in `docs/`, do not add 
 
 Prefer precise technical writing over generic explanation.
 
+Do not add plausible technical details just because they are common. This includes endpoints, HTTP status codes, error response formats, Docker Compose snippets, Makefile targets, commands, environment variables, defaults, limits, ports, CI steps, dependencies, or examples unless they are explicitly present in the redaction plan or supporting files in `docs/`.
+
 ## Source Boundary
 
 The only authorized source directory is `docs/`.
@@ -27,6 +29,8 @@ Do not read source code, prompts, configuration files, tests, repository files, 
 Do not verify the code yourself under any circumstance. The codebase has already been explored by previous agents, and all usable information is already in `docs/`.
 
 If a technical detail is missing from `docs/`, treat it as missing. Do not inspect the repository to recover it.
+
+If the redaction plan mentions repository files such as `app/main.py`, `tools.py`, `Dockerfile`, or `Makefile`, treat them only as paths reported by the documents in `docs/`. This does not authorize you to read those files.
 
 ## Output Boundary
 
@@ -112,6 +116,7 @@ For each section:
 - Avoid content that the plan says belongs in another section.
 - Avoid repeating material already assigned to another section.
 - Phrase uncertainties cautiously when the plan marks information as uncertain.
+- Do not convert open questions or missing information into documentation content. If Docker Compose, an endpoint, an error code, a command, or a target is marked as missing or uncertain, omit it or clearly state that it is not documented.
 
 Do not include planning notes, local review criteria, internal reasoning, or commentary in the generated documentation.
 
@@ -138,6 +143,8 @@ When writing technical sections, include concrete details from `docs/`:
 - known edge cases
 
 Do not use vague wording when precise facts are available.
+
+Do not add API endpoints, status codes, error payloads, deployment modes, Makefile commands, Docker Compose examples, or configuration values unless the plan or `docs/` explicitly provides them.
 
 Bad:
 
