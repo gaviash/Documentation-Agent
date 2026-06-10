@@ -3,6 +3,7 @@ from tools import (
     web_search,
     read_file,
     write_file,
+    edit_file,
     shell,
     ask_user
 )
@@ -90,9 +91,17 @@ Writing_plan_agent=FunctionAgent(
     timeout=200
 )
 
-"""
-Writing_agent=FunctionAgent() #Eux sont plusieurs,mais en sequentiel,par ce qu'ollama n'autorise pas les reqeutes en parallele
 
+Writing_agent=FunctionAgent(
+    name="WritingAgent",
+    llm=first_model,
+    system_prompt=load_prompt(["redac-writing.md"]),
+    tools=[write_file,read_file,shell,edit_file],
+    timeout=200    
+)
+
+#Eux sont plusieurs,mais en sequentiel,par ce qu'ollama n'autorise pas les reqeutes en parallele
+"""
 Review_agent=FunctionAgent()
 
 doc_agent=FunctionAgent()
@@ -113,7 +122,7 @@ async def query(message,memory,agent : FunctionAgent,step : str,workflow_run_id 
         
         with propagate_attributes(
             session_id=workflow_run_id,
-            trace_name=f"documentation-workflow:{workflow_run_id[:8]}",
+            trace_name=f"{step}:{workflow_run_id[:8]}",
             tags=["documentation-workflow", step],
             metadata=metadata,
         ):

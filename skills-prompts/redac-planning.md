@@ -14,6 +14,8 @@ Prefer a simple, high-quality document structure over an over-engineered one.
 
 Do not create unnecessary sections, diagrams, appendices, or review steps just because they are possible. Include them only when they improve the document for its target audience.
 
+Be adaptive to the user's request. User-specified preferences about document size, length, depth, architecture, structure, tone, format, examples, diagrams, priorities, exclusions, and writing style are binding constraints. Capture them explicitly in the plan and make the plan's level of detail match the requested document size and complexity.
+
 ## Source Boundary
 
 The only authorized source directory is `docs/`.
@@ -55,7 +57,9 @@ Identify:
 - Document purpose
 - Target audience
 - Reader knowledge level
+- Requested document size, length, and level of detail
 - Required output format
+- User preferences about architecture, structure, tone, examples, diagrams, and writing style
 - Source materials available in `docs/`
 - Missing information
 - Constraints and assumptions
@@ -73,6 +77,7 @@ Capture:
 - Secondary audience
 - Desired reader action or understanding
 - Tone and style expectations
+- User-requested document size, length, and detail level
 - Required level of detail
 - Non-negotiable messages
 - Things to avoid
@@ -96,14 +101,19 @@ When there are meaningful alternatives, include 2-3 options with trade-offs and 
 
 Create a clear document architecture.
 
+When the available `docs/` material supports it, prefer adding a simple codebase or architecture diagram near the introduction or early overview section. Include it only if it helps the reader understand the project structure, main components, or data flow.
+
 For each major section, define:
 
 - Purpose
 - Key points
 - Required sources from `docs/`
+- Concrete source-grounded facts to reuse
+- Inputs, outputs, parameters, limits, examples, or behaviors to mention when the section is technical
 - Expected length or depth
 - Dependencies on other sections
 - Visuals, tables, or diagrams needed, if any
+- Assumptions, missing details, or uncertainties specific to the section
 - Review criteria
 
 The structure must be easy for another agent or writer to execute without needing to rediscover the whole context.
@@ -116,16 +126,20 @@ The plan should include:
 
 - Document objective
 - Audience
+- User requirements and preferences
 - Assumptions
 - Source inventory limited to `docs/`
 - Recommended structure
 - Section-by-section writing instructions
+- Dense section-level evidence and technical details copied from `docs/`
 - Evidence and source requirements
 - Style rules
 - Review checklist
 - Export or rendering requirements
 - Open questions
 - Execution phases
+
+The section-by-section instructions are the most important part of the plan. They must be detailed enough for a future writer to draft each section without rereading every source document.
 
 ### 6. Review & Refinement Plan
 
@@ -195,6 +209,19 @@ Use this structure for the single plan Markdown file:
 
 Explain what the document must achieve.
 
+## 1.1 User Requirements And Preferences
+
+- Requested document size:
+- Expected length:
+- Expected level of detail:
+- Required tone:
+- Required structure or architecture:
+- Required format:
+- Requested examples, diagrams, tables, or code snippets:
+- Priorities:
+- Exclusions:
+- Other writing preferences:
+
 ## 2. Target Audience
 
 - Primary audience:
@@ -237,12 +264,56 @@ Explain the chosen writing approach and why.
 
 ### Section 1: <name>
 
-- Purpose:
-- Must include:
-- Must avoid:
-- Source requirements from `docs/`:
-- Suggested length/depth:
-- Notes for writer:
+#### Section Goal
+
+Explain what this section must achieve for the reader.
+
+#### Required Content
+
+List the concrete points that must be covered.
+
+#### Evidence And Technical Details From docs/
+
+Copy the relevant facts from `docs/` directly into this section instruction.
+
+Do not only point to source file names. Source names are useful for traceability, but the writer must have enough factual material here to draft the section.
+
+For technical sections, include concrete names, paths, responsibilities, inputs, outputs, parameters, return values, constraints, limits, examples, defaults, data flow, dependencies, and known edge cases whenever they are available in `docs/`.
+
+For API sections, include endpoint paths, HTTP methods, request fields, response fields, schemas, session behavior, errors or limitations if documented, and example payloads when enough information is available.
+
+For tool sections, include each tool name, purpose, parameters, return shape, constraints, timeouts, output limits, safety rules, external services used, and example use cases when documented.
+
+For configuration or deployment sections, include environment variables, required/optional status, defaults, ports, commands, Docker or CI facts, runtime dependencies, and operational constraints when documented.
+
+Avoid vague summaries such as "the project has several tools" or "the API handles requests". Replace them with precise reusable facts.
+
+#### Suggested Local Structure
+
+- Opening idea:
+- Main explanation blocks:
+- Table, example, or diagram needed:
+- Closing transition:
+
+#### Must Avoid
+
+List details that belong in another section, are unsupported by `docs/`, or would create noise.
+
+#### Assumptions And Uncertainties
+
+List assumptions, missing information, and open questions that affect this section.
+
+#### Suggested Length / Depth
+
+State whether the section should be short, medium, or detailed, and give an approximate length when useful.
+
+#### Notes For Writer
+
+Give concrete tone, structure, transition, and clarity advice for this specific section.
+
+#### Local Review Criteria
+
+- [ ] ...
 
 ## 8. Style & Formatting Rules
 
@@ -252,7 +323,7 @@ Explain the chosen writing approach and why.
 - Tables:
 - Code blocks:
 - Citations/sources:
-- Visuals:
+- Visuals: include a simple codebase or architecture diagram in the introduction or early overview when `docs/` contains enough source-grounded information and the diagram improves comprehension.
 
 ## 9. Rendering / Export Requirements
 
@@ -267,7 +338,6 @@ Explain the chosen writing approach and why.
 - [ ] Objective is clear
 - [ ] Audience needs are addressed
 - [ ] Structure is logical
-- [ ] Claims are grounded in `docs/`
 - [ ] Open questions are visible
 - [ ] Repetition is removed
 - [ ] Tone is consistent
@@ -281,11 +351,7 @@ Explain the chosen writing approach and why.
 
 ### Phase 3: Review
 
-### Phase 4: Formatting/export
 
-## 12. Final Recommendation
-
-State the immediate next step.
 ```
 
 ## Quality Standards

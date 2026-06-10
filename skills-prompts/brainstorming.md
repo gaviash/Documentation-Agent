@@ -18,19 +18,26 @@ Do not write the final documentation. Do not write the writing plan. Do not impl
 
 Work autonomously by default.
 
-Ask the user questions when they help shape the documentation itself. Preserve the spirit of brainstorming: clarify the user's intent, preferences, constraints, and desired outcome before locking the design.
+Ask the user questions when they help shape the documentation itself. Preserve the spirit of brainstorming: clarify the user's intent, preferences, constraints, and desired outcome before proposing approaches or locking the design.
 
-These documentation-scoping questions are a required part of the process. Before writing the design and useful informations documents, you must ask the user at least one meaningful documentation-scoping question unless the user's initial request already clearly answers the key choices.
+These documentation-scoping questions are a required part of the process. Before proposing approaches or writing the design and useful informations documents, you must ask at least one meaningful documentation-scoping question unless the user's initial request already clearly answers the key choices.
 
 Valid user questions may cover:
 - target audience and reader knowledge level
 - final format and export expectations
-- desired depth and length
+- expected document size
+- desired level of detail
+- expected length or length range
+- section density and amount of technical detail
 - documentation type and priorities
 - preferred structure or sections
 - tone and style
 - exclusions and things to avoid
 - diagrams, tables, examples, screenshots, or other visual needs
+- intended use of the documentation
+- reader actions expected after reading
+- examples, commands, references, or code snippets to include
+- level of polish and final delivery constraints
 - success criteria
 - choosing between proposed approaches
 
@@ -75,13 +82,13 @@ Complete these steps in order:
    Inspect `process/` enough to understand project purpose, structure, entrypoints, important files, dependencies, and documentation-relevant constraints. Gather enough concrete facts to write a substantial source-grounded codebase overview in the design document.
 
 2. **Identify documentation intent**  
-   Infer audience, scope, desired output format, detail level, exclusions, risks, likely documentation style, and possible visual/diagram needs from the user's request and the project context.
+   Infer audience, scope, desired output format, expected document size, desired detail level, expected length, section density, exclusions, risks, likely documentation style, and possible visual/diagram needs from the user's request and the project context.
 
 3. **Ask only user-owned questions**  
-   Ask concise questions when they concern user-owned documentation decisions: audience, format, depth, exclusions, priority, tone, structure, diagrams, examples, specificity, or success criteria. This questioning step is mandatory unless those choices are already explicit in the user's request. Ask one focused question at a time when possible. Never ask the user about repository facts or codebase content.
+   Ask concise questions when they concern user-owned documentation decisions: audience, format, expected document size, detail level, length, section density, exclusions, priority, tone, structure, diagrams, examples, specificity, intended use, reader outcome, polish level, or success criteria. This questioning step is mandatory unless those choices are already explicit in the user's request. Ask one focused question at a time when possible. Never ask the user about repository facts or codebase content.
 
 4. **Propose approaches and get the user's choice**  
-   Present 2-3 documentation approaches with trade-offs and your recommendation. This approach-selection step is mandatory before writing the documents, unless the user has already made the direction explicit and unambiguous. Ask the user to choose one approach. The options must be about documentation direction, not about repository facts.
+   Present 2-3 documentation approaches with trade-offs and your recommendation only after the required documentation-scoping questions have been answered or are already clearly resolved by the initial request. This approach-selection step is mandatory before writing the documents, unless the user has already made the direction explicit and unambiguous. Ask the user to choose one approach. The options must be about documentation direction, not about repository facts.
 
 5. **Write the design/orientation document**  
    Write `docs/YYYY-MM-DD-<topic>-design.md`.
