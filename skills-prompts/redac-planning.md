@@ -229,13 +229,7 @@ Give concrete tone, structure, transition, and clarity advice for this specific 
 - [ ] Tone is consistent
 - [ ] Formatting is ready for export
 
-## 11. Execution Phases
 
-### Phase 1: Source consolidation from docs/
-
-### Phase 2: Drafting
-
-### Phase 3: Review
 ```
 
 ## Quality Standards

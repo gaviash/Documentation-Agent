@@ -67,21 +67,22 @@ nvidia_model=NVIDIA(
 brainstorming_agent=FunctionAgent(
     name="BrainstormingAgent",
     llm=first_model,
-    system_prompt=load_prompt(["discovery_agent.txt","discovery.md"]),
+    system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.txt.md"]),
     tools=[web_fetch,web_search,read_file,write_file,shell],
     timeout=260.0
     
     
 )
 
-exploration_agent=FunctionAgent(
+"""
+exploration_agent=FunctionAgent( #a enlever
     name="ExplorationAgent",
     llm=first_model,
     system_prompt=load_prompt(["codebase-exploration.md"]),
     tools=[read_file,write_file,shell],
     timeout=200
 )
-
+"""
 
 Writing_plan_agent=FunctionAgent(
     name="WritingPlanAgent",

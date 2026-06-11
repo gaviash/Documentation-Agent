@@ -50,7 +50,7 @@ Write Markdown files only.
 
 ## Required Input
 
-Before writing, read the redaction plan located in `docs/`.
+Before writing, read the redaction plan located in `docs/`,and all the files inside via multi-files read.
 
 If several redaction plans exist, use the one that best matches the user's current request. Prefer the most recent relevant plan.
 

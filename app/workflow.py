@@ -8,7 +8,6 @@ from llama_index.core.workflow import (
 
 from agents import (
     brainstorming_agent,
-    exploration_agent,
     Writing_plan_agent,
     Writing_agent,
     query
@@ -21,7 +20,6 @@ import os
 import asyncio
 
 base_memory = Memory(token_limit=150000)
-explorer_memory = Memory(token_limit=150000)
 planner_memory = Memory(token_limit=150000)
 writer_memory = Memory(token_limit=150000)
 
@@ -59,8 +57,8 @@ async def brainstorming_launch_debug(workflow_id : str) :
     print(data['message']) # type: ignore
     return data['message'] # type: ignore
 
-
-async def explorer_launch_debug(workflow_id : str):
+""" #its now a useless part
+async def explorer_launch_debug(workflow_id : str): # a enlever
     response = await query(
         message=("Explore"),
         memory=explorer_memory,
@@ -70,6 +68,7 @@ async def explorer_launch_debug(workflow_id : str):
     )
     print(response)
     return response
+"""
 
 async def planning_launch_debug(workflow_id : str):
     response = await query(
@@ -97,10 +96,9 @@ async def writing_launch_debug(workflow_id : str):
 async def main():
     workflow_run_id = str(uuid4())
     print(f"\n\n Workflow ID : {workflow_run_id}\n\n")
-    await brainstorming_launch_debug(workflow_run_id)
-    #await explorer_launch_debug(workflow_run_id)
+    #await brainstorming_launch_debug(workflow_run_id)
     #await planning_launch_debug(workflow_run_id)
-    #await writing_launch_debug(workflow_run_id)
+    await writing_launch_debug(workflow_run_id)
     return 
 
 asyncio.run(main())
