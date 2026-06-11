@@ -22,6 +22,14 @@ Read only files located inside `docs/`. Do not read source code, repository file
 
 Use the user's request as context, but all factual planning assumptions about the project must be grounded in `docs/`.
 
+The current discovery step provides these canonical source documents:
+
+- `docs/YYYY-MM-DD-<topic>-design.md`: documentation direction, user preferences, selected approach, target audience, structure intent, constraints, risks, and planning focus.
+- `docs/codebase-map.md`: repository map, important files, inspection status, and source coverage ledger.
+- `docs/technical-findings.md`: dense source-grounded technical facts; treat this as the primary technical evidence source.
+
+When several design or redaction-related documents exist, prefer the most recent relevant design document that matches the user's current request, together with the current `codebase-map.md` and `technical-findings.md`.
+
 If useful information is missing from `docs/`, record it as missing information or an open question. Do not search elsewhere.
 
 When `docs/` mention paths such as `app/main.py`, `app/tools.py`, `Dockerfile`, or `Makefile`, treat them as reported facts from documentation, not as files you personally inspected. In the plan, list only documents from `docs/` as source material. Code paths may appear inside section evidence for traceability, but never in the `Source Material From docs/` table as direct sources.
@@ -55,7 +63,7 @@ The plan must include:
 - document objective
 - user requirements and preferences
 - target audience and desired reader outcome
-- source inventory limited to files in `docs/`
+- source inventory limited to the relevant files in `docs/`, prioritizing the current design, `codebase-map.md`, and `technical-findings.md`
 - assumptions, missing information, and open questions
 - recommended strategy and alternatives when useful
 - proposed document structure

@@ -32,6 +32,12 @@ If a technical detail is missing from `docs/`, treat it as missing. Do not inspe
 
 If the redaction plan mentions repository files such as `app/main.py`, `tools.py`, `Dockerfile`, or `Makefile`, treat them only as paths reported by the documents in `docs/`. This does not authorize you to read those files.
 
+The current supporting source documents in `docs/` are:
+
+- the current `*-design.md`: user preferences, selected documentation direction, audience, scope, constraints, and final structure intent
+- `codebase-map.md`: repository map and inspection status
+- `technical-findings.md`: primary technical evidence source
+
 ## Output Boundary
 
 Write output files only inside `docsgen/`.
@@ -64,7 +70,7 @@ The redaction plan is the main authority for:
 - rendering/export constraints
 - review criteria
 
-Use other files in `docs/` only to support the section being written, and only when the redaction plan indicates that they are relevant.
+Use other files in `docs/` only to support the section being written, and only when the redaction plan indicates that they are relevant. For technical facts, prefer `technical-findings.md`; use `codebase-map.md` for inspection status and repository structure; use the design document for user preferences and documentation direction.
 
 ## Writing Scope
 

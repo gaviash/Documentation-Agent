@@ -34,6 +34,10 @@ def clean_json_response(content: str) -> str:
         content = content.removeprefix("```").strip()
     if content.endswith("```"):
         content = content.removesuffix("```").strip()
+    start = content.find("{")
+    end = content.rfind("}")
+    if start != -1 and end != -1 and start < end:
+        content = content[start:end + 1].strip()
     return content
 
 
@@ -94,9 +98,9 @@ async def main():
     workflow_run_id = str(uuid4())
     print(f"\n\n Workflow ID : {workflow_run_id}\n\n")
     await brainstorming_launch_debug(workflow_run_id)
-    await explorer_launch_debug(workflow_run_id)
-    await planning_launch_debug(workflow_run_id)
-    await writing_launch_debug(workflow_run_id)
+    #await explorer_launch_debug(workflow_run_id)
+    #await planning_launch_debug(workflow_run_id)
+    #await writing_launch_debug(workflow_run_id)
     return 
 
 asyncio.run(main())
