@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from typing import Literal, Optional
 import json
 import os
+import re
 import subprocess
 import shutil
 
@@ -315,30 +316,48 @@ def edit_file(
     new_str: str,
     encoding: str = "utf-8",
     allow_multiple: bool = False,
+    case_sensitive: bool = True,
+    occurrence_index: Optional[int] = None,
+    start_line: Optional[int] = None,
+    end_line: Optional[int] = None,
 ) -> dict:
-    """Replace an exact text fragment inside a workspace file.
+    """Replace a text fragment inside a workspace file.
 
-    Use this tool for precise edits where the original text is known. By default
-    the tool refuses ambiguous replacements when old_str appears more than once;
-    this prevents accidental broad edits. Set allow_multiple=True only when all
-    occurrences should be replaced.
+    Use this tool for precise, targeted edits where the original text is known.
+    By default the tool is conservative: it edits only when exactly one match is
+    found, refusing ambiguous replacements. To make review edits easier and less
+    brittle, you can scope the search to a line range, select a specific
+    occurrence, or disable case sensitivity.
+
+    Prefer these safer disambiguation options before using allow_multiple:
+    - start_line/end_line: restrict the search to a known region.
+    - occurrence_index: replace one 1-based occurrence within the scoped text.
+    - case_sensitive=False: match text regardless of case.
 
     Parameters:
     - path: File path to edit, relative to the workspace whenever possible.
-    - old_str: Exact text fragment to find. Empty strings are rejected.
+    - old_str: Text fragment to find. Empty strings are rejected.
     - new_str: Replacement text.
     - encoding: Text encoding used to read and write the file. Defaults to
       "utf-8".
     - allow_multiple: Replace every occurrence when True. When False, the tool
-      only edits the file if old_str appears exactly once.
+      only edits the file if one occurrence is found or occurrence_index is set.
+    - case_sensitive: When False, match old_str ignoring case. Defaults to True.
+    - occurrence_index: Optional 1-based occurrence number to replace inside the
+      scoped text. Cannot be combined with allow_multiple=True.
+    - start_line: Optional 1-based first line of the search scope.
+    - end_line: Optional 1-based last line of the search scope, inclusive.
 
     Returns:
     A dictionary with:
     - success: True when at least one replacement was written.
     - error: Error message when success is False, otherwise None.
     - path: Resolved absolute file path when available.
-    - occurrences: Number of matches found before editing.
+    - occurrences: Number of matches found in the scoped text before editing.
     - replacements: Number of replacements written.
+    - case_sensitive: Whether the search was case-sensitive.
+    - scoped: True when a line range was used.
+    - start_line/end_line: Effective line range when scoped.
     """
     try:
         if old_str == "":
@@ -349,10 +368,55 @@ def edit_file(
                 occurrences=0,
                 replacements=0,
             )
+        if old_str == new_str:
+            return _tool_result(
+                False,
+                "old_str and new_str are identical; refusing no-op edit.",
+                path=path,
+                occurrences=0,
+                replacements=0,
+            )
+        if occurrence_index is not None and allow_multiple:
+            return _tool_result(
+                False,
+                "occurrence_index cannot be combined with allow_multiple=True.",
+                path=path,
+                occurrences=0,
+                replacements=0,
+            )
 
         safe = _safe_path(path)
         text = safe.read_text(encoding=encoding)
-        occurrences = text.count(old_str)
+        lines = text.splitlines(keepends=True)
+        line_range = _normalize_line_range(start_line, end_line, len(lines))
+        scoped = line_range is not None
+        if scoped:
+            start, end = line_range # type: ignore
+            if start > len(lines):
+                return _tool_result(
+                    False,
+                    "start_line is beyond the end of the file.",
+                    path=str(safe),
+                    occurrences=0,
+                    replacements=0,
+                    scoped=True,
+                    start_line=start,
+                    end_line=end,
+                )
+            prefix = "".join(lines[:start - 1])
+            scope_text = "".join(lines[start - 1:end])
+            suffix = "".join(lines[end:])
+        else:
+            start = None
+            end = None
+            prefix = ""
+            scope_text = text
+            suffix = ""
+
+        flags = 0 if case_sensitive else re.IGNORECASE
+        pattern = re.compile(re.escape(old_str), flags)
+        matches = list(pattern.finditer(scope_text))
+        occurrences = len(matches)
         if occurrences == 0:
             return _tool_result(
                 False,
@@ -360,23 +424,91 @@ def edit_file(
                 path=str(safe),
                 occurrences=0,
                 replacements=0,
+                case_sensitive=case_sensitive,
+                scoped=scoped,
+                start_line=start,
+                end_line=end,
             )
-        if occurrences > 1 and not allow_multiple:
+        if occurrence_index is not None:
+            try:
+                selected_index = int(occurrence_index)
+            except (TypeError, ValueError):
+                return _tool_result(
+                    False,
+                    "occurrence_index must be an integer when provided.",
+                    path=str(safe),
+                    occurrences=occurrences,
+                    replacements=0,
+                    case_sensitive=case_sensitive,
+                    scoped=scoped,
+                    start_line=start,
+                    end_line=end,
+                )
+            if selected_index < 1 or selected_index > occurrences:
+                return _tool_result(
+                    False,
+                    f"occurrence_index must be between 1 and {occurrences}.",
+                    path=str(safe),
+                    occurrences=occurrences,
+                    replacements=0,
+                    case_sensitive=case_sensitive,
+                    scoped=scoped,
+                    start_line=start,
+                    end_line=end,
+                )
+            selected_matches = [matches[selected_index - 1]]
+        elif allow_multiple:
+            selected_matches = matches
+        elif occurrences == 1:
+            selected_matches = matches
+        else:
             return _tool_result(
                 False,
-                "Substring appears multiple times. Set allow_multiple=True to replace all occurrences.",
+                (
+                    "Substring appears multiple times. Use start_line/end_line, "
+                    "occurrence_index, or allow_multiple=True to disambiguate."
+                ),
                 path=str(safe),
                 occurrences=occurrences,
                 replacements=0,
+                case_sensitive=case_sensitive,
+                scoped=scoped,
+                start_line=start,
+                end_line=end,
             )
 
-        replacements = occurrences if allow_multiple else 1
-        safe.write_text(text.replace(old_str, new_str, replacements), encoding=encoding)
+        if all(match.group(0) == new_str for match in selected_matches):
+            return _tool_result(
+                False,
+                "Selected match already equals new_str; refusing no-op edit.",
+                path=str(safe),
+                occurrences=occurrences,
+                replacements=0,
+                case_sensitive=case_sensitive,
+                scoped=scoped,
+                start_line=start,
+                end_line=end,
+            )
+
+        edited_scope = scope_text
+        for match in reversed(selected_matches):
+            edited_scope = (
+                edited_scope[:match.start()]
+                + new_str
+                + edited_scope[match.end():]
+            )
+
+        replacements = len(selected_matches)
+        safe.write_text(prefix + edited_scope + suffix, encoding=encoding)
         return _tool_result(
             True,
             path=str(safe),
             occurrences=occurrences,
             replacements=replacements,
+            case_sensitive=case_sensitive,
+            scoped=scoped,
+            start_line=start,
+            end_line=end,
         )
     except Exception as e:
         return _tool_result(False, str(e), path=path, occurrences=0, replacements=0)

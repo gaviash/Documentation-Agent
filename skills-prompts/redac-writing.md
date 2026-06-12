@@ -91,6 +91,8 @@ If the user or workflow asks for a specific pair of sections, write only that pa
 
 If no specific pair is requested, write the next missing pair based on the files already present in `docsgen/`.
 
+Before writing a new pair, check which earlier section files already exist in `docsgen/` and avoid repeating their explanations. Use them only to maintain continuity and transitions.
+
 ## File Naming
 
 Use clear file names that preserve order.
@@ -120,7 +122,9 @@ For each section:
 - Respect the style and formatting rules from the plan.
 - Use tables, examples, code blocks, or diagrams only when the plan asks for them or when they clearly improve the section.
 - Avoid content that the plan says belongs in another section.
-- Avoid repeating material already assigned to another section.
+- Pay special attention to duplication: do not repeat definitions, architecture overviews, setup steps, warnings, tool descriptions, configuration tables, examples, or conclusions already covered in previous sections.
+- Avoid repeating material already assigned to another section. If a reminder is necessary, keep it short and refer back to the earlier idea instead of rewriting it.
+- Each section must add new value according to its role in the redaction plan.
 - Phrase uncertainties cautiously when the plan marks information as uncertain.
 - Do not convert open questions or missing information into documentation content. If Docker Compose, an endpoint, an error code, a command, or a target is marked as missing or uncertain, omit it or clearly state that it is not documented.
 

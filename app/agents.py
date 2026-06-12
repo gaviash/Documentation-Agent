@@ -49,6 +49,17 @@ first_model = Ollama(
     }
 )
 
+review_model = Ollama(
+    model=str(os.getenv("REVIEW_MODEL")),
+    temperature=0.0,
+    context_window=262000,
+    request_timeout=150.0,
+    base_url="https://ollama.com",
+    headers={
+        "Authorization": f"Bearer {os.getenv('OLLAMA_API_KEY')}"
+    }
+)
+
 """
 groq_model = Groq(
     model=os.getenv("GROQ_MODEL"), # type: ignore
@@ -67,7 +78,7 @@ nvidia_model=NVIDIA(
 brainstorming_agent=FunctionAgent(
     name="BrainstormingAgent",
     llm=first_model,
-    system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.txt.md"]),
+    system_prompt=load_prompt(["brainstorming_agent.txt","brainstorming.md"]),
     tools=[web_fetch,web_search,read_file,write_file,shell],
     timeout=260.0
     
@@ -102,13 +113,25 @@ Writing_agent=FunctionAgent(
 )
 
 #Eux sont plusieurs,mais en sequentiel,par ce qu'ollama n'autorise pas les reqeutes en parallele
-"""
-Review_agent=FunctionAgent()
 
-doc_agent=FunctionAgent()
-"""
+review_agent=FunctionAgent(
+    name="reviewAgent",
+    llm=review_model,
+    system_prompt=load_prompt(["redac-review.md"]),
+    tools=[read_file,edit_file,write_file],
+    timeout=250
+)
 
-async def query(message,memory,agent : FunctionAgent,step : str,workflow_run_id : str):
+doc_agent=FunctionAgent(
+    name="DocAgent",
+    llm=first_model,
+    system_prompt=load_prompt(["doc-agent.md"]),
+    tools=[write_file,read_file,edit_file,shell],
+    timeout=100.0
+)
+
+
+async def query(message,memory,agent : FunctionAgent,step : str,workflow_run_id : str,max_iterations : int = 50):
     metadata={
                 "workflow_run_id": workflow_run_id,
                 "step": step,
@@ -128,7 +151,7 @@ async def query(message,memory,agent : FunctionAgent,step : str,workflow_run_id 
             metadata=metadata,
         ):
     
-            handler = agent.run(user_msg=message,memory=memory,max_iterations=50)
+            handler = agent.run(user_msg=message,memory=memory,max_iterations=max_iterations)
             async for event in handler.stream_events():
                 if isinstance(event, AgentStream):
                     if event.delta:
