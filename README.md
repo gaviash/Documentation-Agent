@@ -1,82 +1,97 @@
 # DocumentationAgent
 
-DocumentationAgent est un prototype de workflow multi-agents pour produire une documentation de codebase a partir d'un dossier cible.
+DocumentationAgent est un prototype termine de workflow multi-agents pour produire une documentation de codebase a partir d'un dossier cible.
 
-Le projet cherche a decouper le travail de documentation en etapes specialisees : cadrer la demande, explorer le projet, produire des documents de preparation, planifier la redaction, puis ecrire la documentation finale par sections.
+Le projet valide une chaine complete : cadrage utilisateur, exploration de codebase, production de documents de preparation, plan de redaction, redaction par sections, review legere, puis rendu final avec Pandoc.
 
 ## Principe
 
-Les agents sont construits avec LlamaIndex `FunctionAgent` et utilisent un modele Ollama. Chaque agent recoit un prompt specialise depuis `skills-prompts/`, precede par un prompt general commun.
+Les agents sont construits avec LlamaIndex `FunctionAgent` et utilisent des modeles Ollama. Chaque agent recoit un prompt specialise depuis `skills-prompts/`, precede par un prompt general commun.
 
-Les outils disponibles permettent notamment de :
+Le projet cible a documenter est attendu dans `process/`. Les documents intermediaires sont ecrits dans `docs/`, les sections redigees dans `docsgen/`, puis le document final est genere dans `docsgen/`.
 
-- lire et ecrire des fichiers dans le workspace ;
-- lire plusieurs fichiers en une seule operation quand c'est pertinent ;
-- executer des commandes shell controlees ;
-- faire de la recherche ou de l'extraction web via Tavily.
+Les outils exposes aux agents permettent de lire/ecrire/editer des fichiers, executer certaines commandes shell, faire de la recherche web via Tavily et lancer Pandoc pour le rendu final.
 
-Le projet cible a documenter est attendu dans `process/`. Les documents intermediaires sont ecrits dans `docs/`, puis les sections redigees dans `docsgen/`. Ces dossiers sont ignores par Git car ils contiennent des donnees de travail ou des generations locales.
-
-## Agents et passage de fichiers
-
-Le workflow est encore en phase de debug, mais il s'organise autour de trois agents principaux qui se transmettent des fichiers Markdown.
+## Agents et fichiers transmis
 
 ### BrainstormingAgent
 
-Role : cadrer la demande utilisateur et preparer la base de travail.
+Role : cadrer la demande, poser les questions utiles, proposer des approches, explorer la codebase, puis produire les documents de preparation.
 
-L'agent inspecte le projet dans `process/`, pose les questions necessaires sur la documentation attendue, propose plusieurs approches a valider, puis explore plus finement la codebase selon l'approche choisie.
-
-Il produit dans `docs/` :
+Il lit le projet dans `process/` et produit dans `docs/` :
 
 - `YYYY-MM-DD-<topic>-design.md`
 - `codebase-map.md`
 - `technical-findings.md`
 
-Ces fichiers contiennent respectivement l'orientation documentaire, la carte de codebase et les faits techniques detailles.
+Ces fichiers contiennent l'orientation documentaire, la carte de codebase et les faits techniques utiles aux agents suivants.
 
 ### WritingPlanAgent
 
 Role : transformer les documents de preparation en plan de redaction.
 
-Il lit uniquement les fichiers dans `docs/`, en particulier :
-
-- le document de design ;
-- `codebase-map.md` ;
-- `technical-findings.md`.
-
-Il produit dans `docs/` :
+Il lit uniquement les fichiers de `docs/` et produit :
 
 - `YYYY-MM-DD-<topic>-redaction-plan.md`
 
-Ce plan precise la structure finale, les sections a ecrire, le ton, la taille attendue, les sources a utiliser et les contraintes utilisateur.
+Le plan contient la structure finale, le ton, les contraintes utilisateur, les sections attendues, les sources a utiliser et la checklist de review.
 
 ### WritingAgent
 
 Role : rediger la documentation finale par morceaux.
 
-Il lit le plan de redaction et les documents autorises dans `docs/`. Il ne relit pas la codebase directement.
-
-Il produit dans `docsgen/` des fichiers Markdown par paires de sections, par exemple :
+Il lit le plan et les fichiers autorises dans `docs/`, puis produit dans `docsgen/` des fichiers Markdown par paires de sections :
 
 - `YYYY-MM-DD-<topic>-sections-01-02.md`
 - `YYYY-MM-DD-<topic>-sections-03-04.md`
 - `YYYY-MM-DD-<topic>-sections-05-06.md`
 
-Les futurs agents prevus sont un agent de review et un agent de mise en forme/export, mais ils ne sont pas encore implementes.
+### ReviewAgent
+
+Role : faire une review legere avant export.
+
+Il lit le plan de redaction et les sections produites dans `docsgen/`. Il ne relit pas la codebase et ne refait pas d'audit technique. Son travail consiste surtout a corriger les problemes de formulation, redondance, coherence, syntaxe, Markdown et conformite au plan.
+
+Il peut produire un rapport de review court dans `docsgen/`.
+
+### DocAgent
+
+Role : preparer le rendu final.
+
+Il nettoie les eventuelles coquilles de jonction en debut/fin de fichiers, concatene les sections si necessaire, puis lance Pandoc pour generer le document final.
+
+Le rendu DOCX utilise le fichier de reference Pandoc place a la racine :
+
+- `reference-doc.docx`
+
+## Pandoc et rendu final
+
+Le rendu final s'appuie sur Pandoc. La commande utilisee par le DocAgent est adaptee selon les fichiers disponibles, mais suit cette forme :
+
+```bash
+pandoc docsgen/documentation.md \
+  --from markdown+pipe_tables+fenced_code_blocks+fenced_divs+smart \
+  --to docx \
+  --toc \
+  --number-sections \
+  --reference-doc ../reference-doc.docx \
+  -o docsgen/documentation.docx
+```
+
+Si les fichiers Markdown ne sont pas concatenes avant rendu, Pandoc peut recevoir plusieurs fichiers d'entree dans le bon ordre.
 
 ## Fichiers principaux
 
-- `app/agents.py` : declaration du modele Ollama, des agents et de la fonction commune `query`.
+- `app/agents.py` : declaration des modeles, agents et fonction commune `query`.
 - `app/workflow.py` : orchestration de debug des etapes du workflow.
-- `app/tools.py` : outils exposes aux agents, avec garde-fous de workspace, limites de sortie et support multi-file read.
+- `app/tools.py` : outils exposes aux agents, avec garde-fous de workspace, limites de sortie, edition ciblee et support multi-file read.
 - `skills-prompts/general_prompt.md` : cadre commun injecte avant les prompts specialises.
 - `skills-prompts/brainstorming_agent.txt` et `skills-prompts/brainstorming.md` : prompts du `BrainstormingAgent`.
 - `skills-prompts/redac-planning.md` : prompt du planificateur de redaction.
 - `skills-prompts/redac-writing.md` : prompt de l'agent de redaction.
-- `requirements.txt` : dependances Python du prototype.
-
-`app/main.py` est actuellement vide dans l'etat suivi du repo.
+- `skills-prompts/redac-review.md` : prompt du ReviewAgent.
+- `skills-prompts/doc-agent.md` : prompt du DocAgent.
+- `requirements.txt` : dependances Python.
 
 ## Configuration
 
@@ -85,16 +100,29 @@ La configuration passe par un fichier `.env` local, ignore par Git.
 Variables importantes :
 
 - `OLLAMA_MODEL`
+- `REVIEW_MODEL`
 - `OLLAMA_API_KEY`
 - `PROMPTS_DIR`
 - `TAVILY_API_KEY`
 - `WORKSPACE_DIR`
 - variables Langfuse, si l'observabilite est activee
 
-Le workflow utilise aussi Langfuse/OpenInference pour tracer les appels agents quand la configuration est disponible.
+Le workflow utilise Langfuse/OpenInference pour tracer les appels agents quand la configuration est disponible.
 
-## Etat du projet
+Dependances notables :
 
-Le repo est un prototype actif. Le `BrainstormingAgent` a progressivement recu une responsabilite supplementaire : il ne fait plus seulement le cadrage, il produit aussi les documents techniques de preparation necessaires au planner.
+- LlamaIndex
+- Ollama
+- Tavily
+- Langfuse / OpenInference
+- Pandoc
 
-Le README donne une vue d'ensemble du fonctionnement. Les consignes fines de comportement, les limites de lecture, les formats attendus et les regles anti-invention sont portees par les prompts dans `skills-prompts/`.
+## Etat et limites du projet
+
+Le repo est considere comme termine au sens prototype : la chaine complete existe et peut produire un document final correct.
+
+Les resultats obtenus sont globalement bons et exploitables. En revanche, la methode actuelle est tres instable et couteuse. Elle repose sur le fait de laisser les agents gerer presque toutes les decisions, lectures, corrections et transitions entre etapes. Cette approche est sensible aux prompts, a la casse, aux noms de fichiers, aux sorties tronquees, aux comportements repetitifs des agents et aux erreurs de parsing ou de format.
+
+Le workflow peut aussi consommer un nombre tres important de tokens pour produire une documentation relativement courte. Sur certaines runs, l'ordre de grandeur approche 500k tokens pour un seul document. C'est disproportionne pour une generation documentaire classique.
+
+En clair : ce prototype prouve que le workflow multi-agents fonctionne et peut produire une documentation correcte, mais la methode est a revoir. Une version plus robuste devrait probablement reduire l'autonomie des agents, passer davantage de chemins explicites, limiter les lectures, simplifier les etapes, mieux structurer les donnees intermediaires et eviter de faire "raisonner" les agents sur toute la chaine.
