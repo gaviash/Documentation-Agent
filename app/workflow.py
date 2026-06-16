@@ -165,10 +165,10 @@ async def doc_launch_debug(workflow_id : str):
 async def main():
     workflow_run_id = str(uuid4())
     print(f"\n\n Workflow ID : {workflow_run_id}\n\n")
-    #await brainstorming_launch_debug(workflow_run_id)
-    #await planning_launch_debug(workflow_run_id)
-    #await writing_launch_debug(workflow_run_id)
-    #await review_launch_debug(workflow_run_id)
+    await brainstorming_launch_debug(workflow_run_id)
+    await planning_launch_debug(workflow_run_id)
+    await writing_launch_debug(workflow_run_id)
+    await review_launch_debug(workflow_run_id)
     await doc_launch_debug(workflow_run_id)
     return 
 

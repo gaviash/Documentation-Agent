@@ -45,7 +45,8 @@ Avoid deep inspection of noisy or heavy folders unless necessary:
 Follow this order:
 
 1. **Light exploration**
-   - List `process/`.
+   - Do one minimal listing of `process/` only to confirm the target root and top-level shape.
+   - Do not use `ls -la` for light exploration unless a simple listing failed or permissions/hidden files are the exact missing fact.
    - Inspect only enough small, structural files to understand the project type, likely entrypoints, major directories, and documentation possibilities.
    - Do not perform exhaustive exploration before user scoping.
 
@@ -167,14 +168,21 @@ Do not wait until every possible file has been inspected.
 
 Stop exploration once you have enough source-grounded facts to write the three required documents.
 
-Listing discipline is mandatory:
+Listing discipline is mandatory and strict:
 
-- Use one compact recursive file inventory at the start of targeted exploration, then reuse it as your map.
-- Prefer file-list commands over many directory listings, for example `find process -maxdepth 5 -type f | sort` or an equivalent PowerShell inventory.
-- Do not use repeated `ls -la` calls as an exploration strategy.
-- Never run `ls -la` on a file path; read files with file-read commands.
-- Do not relist a directory or child directory already covered by the inventory unless a command failed, a path is ambiguous, or new files may have been created.
-- After the inventory, prefer reading selected files over listing more paths.
+- Directory listing is only for building a map, not for thinking, reassurance, or progress.
+- Use one compact recursive file inventory at the start of targeted exploration, then reuse it as your map for the rest of the run.
+- Prefer file-list commands over directory-detail commands, for example `find process -maxdepth 5 -type f | sort` or an equivalent PowerShell inventory.
+- `ls -la` is exceptional. Do not use it as a normal exploration command.
+- Do not run `ls -la` after the recursive inventory unless the exact missing fact is permissions, hidden entries, or directory metadata that the inventory cannot provide.
+- Never run `ls -la` on a file path. For files, use file reads.
+- Never list the same directory twice.
+- Never list a child directory already covered by the recursive inventory unless the previous inventory failed, the path is ambiguous, or new files were created after the inventory.
+- Do not chain many listings such as `ls dir && ls dir/sub && ls dir/sub2`. Use one inventory instead.
+- After the inventory, the default next action is reading selected files, not more listing.
+- Before any directory listing, name the exact missing fact it will answer. If the answer is "what files exist", use the existing inventory instead.
+- If a needed path is already present in the inventory, do not list its directory again.
+- If you accidentally perform an unnecessary listing, do not compensate with more listings; move to file reads or writing.
 - When multiple selected files serve the same question, use one multi-file read/batch. Do not split them into separate reads unless size, truncation, or tool limits require it.
 
 ## Output 1: Design Document

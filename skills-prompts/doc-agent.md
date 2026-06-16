@@ -147,7 +147,6 @@ pandoc \
   --from markdown+pipe_tables+fenced_code_blocks+fenced_divs+smart \
   --to docx \
   --toc \
-  --number-sections \
   --reference-doc ../reference-doc.docx \
   -o docsgen/2026-06-11-little-agent-documentation.docx
 ```
